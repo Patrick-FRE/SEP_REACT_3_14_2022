@@ -45,7 +45,7 @@ btn.html('Next Step...!!!');
 
 
 var hiddenBox = $$("#banner-message");
-hiddenBox.hide();
+hiddenBox.html("New message").hide();
 
 console.log(btn.html == hiddenBox.html)
 
@@ -61,4 +61,5 @@ $$.ajax({
         console.log(result)
     }
 });
+
 
