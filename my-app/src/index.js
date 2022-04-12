@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import MyReactDOM from './MyReact/MyReact'
+import MyReactDOM from './MyReact/MyReactDOM';
+import MyReact from './MyReact/MyReact'
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 // real DOM: window.document
@@ -12,15 +12,70 @@ console.dir(document.getElementById('root'));
 const todos = ['buy books', 'pay rental']
 
 const Demo = (
-  <main className="app-main" style={{ color: "red" }} id="main" onClick={() => { alert('click') }}>
+  <main className="app-main" style={{ color: "red" }} id="main" >
     <header>Header</header>
     <div className="content">
       <ul>
-        {todos.map(todo => <li key="todo">{todo}</li>)}
+        {todos.map(todo => <li key="todo" style={{ border: "1px solid black" }} onClick={() => { alert(todo) }}>{todo}</li>)}
       </ul>
     </div>
   </main>
 );
+
+class App extends React.Component {
+  render() {
+    return null
+  }
+}
+
+console.log("app", <App />)
+
+class DemoComponent extends React.Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      counter: 0
+    }
+    console.log('constructor')
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    console.log("getDerivedStateFromProps", props, state);
+    return null;
+  }
+
+  hanldeClick() {
+    console.log(this)
+    this.setState({ counter: this.state.counter + 1 })
+  }
+
+  render() {
+    console.log("render")
+    console.log(document.querySelector(".app-main"))
+    return <main className="app-main" style={{ color: "red" }} id="main" >
+      <header>Header</header>
+      <div className="content">
+        <ul>
+          {todos.map(todo => <li key={todo} style={{ border: "1px solid black" }} onClick={() => { alert(todo) }}>{todo}</li>)}
+        </ul>
+      </div>
+      <div>
+        counter: {this.state.counter}
+        <button onClick={this.hanldeClick}>Add</button>
+      </div>
+    </main>
+  }
+
+  componentDidMount() {
+    console.log("componentDidMount")
+    console.log(document.querySelector(".app-main"))
+
+  }
+}
+
+
+console.log("typeof Class", typeof DemoComponent)
 
 //console.log(App);
 //console.log(React.createElement(App, null));
@@ -46,15 +101,15 @@ console.log(
 );
 
 
-console.log(Demo);
+console.log("APp", <DemoComponent />);
 
 // ReactDOM.render(
 //   Demo,
 //   document.getElementById('root')
 // );
 
-MyReactDOM.render(
-  Demo,
+ReactDOM.render(
+  <DemoComponent name="patrick" />,
   document.getElementById('root')
 );
 
