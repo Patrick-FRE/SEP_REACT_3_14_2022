@@ -35,9 +35,16 @@ class DemoComponent extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      counter: 0
+      counter: 0,
+      title: 'Demo'
     }
     console.log('constructor')
+
+    // this.hanldeClick = this.hanldeClick.bind(this)
+  }
+  shoudComponentUpdate(props, state) {
+    console.log('ShouldComponentUpdate')
+    return true
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -45,16 +52,16 @@ class DemoComponent extends React.Component {
     return null;
   }
 
-  hanldeClick() {
-    console.log(this)
-    this.setState({ counter: this.state.counter + 1 })
+
+  hanldeClick = () => {
+    this.setState({ counter: this.state.counter + 1 });
   }
 
   render() {
     console.log("render")
     console.log(document.querySelector(".app-main"))
     return <main className="app-main" style={{ color: "red" }} id="main" >
-      <header>Header</header>
+      <header>{this.state.title}</header>
       <div className="content">
         <ul>
           {todos.map(todo => <li key={todo} style={{ border: "1px solid black" }} onClick={() => { alert(todo) }}>{todo}</li>)}
@@ -79,29 +86,29 @@ console.log("typeof Class", typeof DemoComponent)
 
 //console.log(App);
 //console.log(React.createElement(App, null));
-console.log(
-  /*#__PURE__*/ React.createElement(
-  'main',
-  {
-    id: 'main',
-  },
-    /*#__PURE__*/ React.createElement(
-    'header',
-    null,
-    'Header'
-  ),
-    /*#__PURE__*/ React.createElement(
-    'div',
-    {
-      className: 'content',
-    },
-    'Cotent'
-  )
-)
-);
+// console.log(
+//   /*#__PURE__*/ React.createElement(
+//   'main',
+//   {
+//     id: 'main',
+//   },
+//     /*#__PURE__*/ React.createElement(
+//     'header',
+//     null,
+//     'Header'
+//   ),
+//     /*#__PURE__*/ React.createElement(
+//     'div',
+//     {
+//       className: 'content',
+//     },
+//     'Cotent'
+//   )
+// )
+// );
 
 
-console.log("APp", <DemoComponent />);
+// console.log("APp", <DemoComponent />);
 
 // ReactDOM.render(
 //   Demo,
@@ -109,11 +116,37 @@ console.log("APp", <DemoComponent />);
 // );
 
 ReactDOM.render(
-  <DemoComponent name="patrick" />,
+  <div>
+    <Header headerTitle="FirstHeader"></Header>
+    <DemoComponent name="patrick" />
+    <h1>Last</h1>
+  </div>
+  ,
   document.getElementById('root')
 );
 
+
+function Header({ headerTitle }) {
+  let state = { title: 'title' }
+
+  return <header>{headerTitle} {state.title}</header>
+}
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 // reportWebVitals();
+
+
+/// call vs bind vs apply
+
+
+// const obj = { title: { value: 'patrick' }, age: 17 }
+
+// const { title: { value } } = obj;
+
+
+//const title = obj.title
+
+// const arr = [{ title: { value: 'patrick' }, age: 17 }, 2, 3];
+// const [{ title: { value } }, second, thrid] = arr;
+// const [data, setData] = React.useState("")

@@ -1,16 +1,31 @@
 
 import MyReact from './MyReact'
+import { isChildrenProp, isClassComponent, isClassNameProp, isEventProp, isStyleProp, addEventProps, addStyleProps } from './uitls'
 
-const render = (ReactElement, ParentElement) => {
-    console.log('CHECK')
+
+const render = (ReactElement, ParentElement, childrenIndex = 0) => {
+    if (typeof ReactElement !== 'object') {
+        const textContent = document.createTextNode(ReactElement);
+        ParentElement.appendChild(textContent)
+        return;
+    }
+
     if (isClassComponent(ReactElement.type)) {
         // render Class Component
         const contructorFn = ReactElement.type
-        const currentInstance = new contructorFn(ReactElement.props)
+        const currentInstance = new contructorFn(ReactElement.props);
         contructorFn.getDerivedStateFromProps(currentInstance.props, currentInstance.state);
         const reactElement = currentInstance.render()
+        currentInstance.vnode = { parentElement: ParentElement, childrenIndex: childrenIndex, oldReactElement: reactElement }
         render(reactElement, ParentElement)
         currentInstance.componentDidMount();
+        return
+    }
+
+    if (typeof ReactElement.type === 'function') {
+        console.log('Function compoent')
+        const reactElement = ReactElement.type(ReactElement.props);
+        render(reactElement, ParentElement)
         return
     }
 
@@ -20,16 +35,18 @@ const render = (ReactElement, ParentElement) => {
         ReactElement.type
     );
 
+    console.log('CHECK', ReactElement, typeof ReactElement)
+
     /// iterate props
     Object.keys(ReactElement.props).forEach(
         (key) => {
             if (isChildrenProp(key)) {
                 const childrenProp = ReactElement.props[key]
                 if (childrenProp instanceof Array) {
-                    childrenProp.forEach(reactElement => {
-                        render(reactElement, newElement)
+                    childrenProp.forEach((reactElement, index) => {
+                        render(reactElement, newElement, index)
                     })
-                } else if (typeof childrenProp === "string") {
+                } else if (typeof childrenProp === "string" || typeof childrenProp === "number") {
                     const textContent = document.createTextNode(childrenProp);
                     newElement.appendChild(textContent)
                 } else {
@@ -58,44 +75,6 @@ const render = (ReactElement, ParentElement) => {
 
     ParentElement.append(newElement);
 };
-
-//
-const PORPS_NAME = {
-    CHILDREN: 'children',
-    CLASS_NAME: 'className',
-    EVENT_START_WITH: 'on',
-    STYLE: 'style'
-}
-
-
-const addStyleProps = (element, styleProps) => {
-    Object.keys(styleProps).forEach((property) => {
-        element.style.setProperty(property, styleProps[property])
-    })
-}
-
-const addEventProps = (element, eventProp) => {
-    const eventType = eventProp.eventType
-        .substring(2)
-        .toLowerCase();
-    element.addEventListener(
-        eventType,
-        eventProp.callback
-    );
-}
-
-
-// utils
-const isChildrenProp = (prop) => prop === PORPS_NAME.CHILDREN;
-const isClassNameProp = (prop) => prop === PORPS_NAME.CLASS_NAME;
-const isStyleProp = (prop) => prop === PORPS_NAME.STYLE
-
-const isEventProp = (prop) => prop.startsWith(PORPS_NAME.EVENT_START_WITH)
-
-const isClassComponent = (type) => {
-    return typeof type === 'function' && type.prototype instanceof MyReact.Component
-}
-
 
 
 
